@@ -1,0 +1,100 @@
+﻿@page "/"
+@rendermode InteractiveServer
+@inject IHttpClientFactory HttpClientFactory
+@inject NavigationManager Navigation
+
+<PageTitle>ToDo App</PageTitle>
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="text-center">@(isLoginMode ? "Вход" : "Регистрация")</h3>
+                </div>
+                <div class="card-body">
+                    <EditForm Model="authRequest" OnValidSubmit="HandleSubmit">
+                        <DataAnnotationsValidator />
+
+                        <div class="mb-3">
+                            <label class="form-label">Email</label>
+                            <InputText @bind-Value="authRequest.Email" class="form-control" type="email" />
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Пароль</label>
+                            <InputText @bind-Value="authRequest.Password" class="form-control" type="password" />
+                        </div>
+
+                        @if (!string.IsNullOrEmpty(errorMessage))
+                        {
+                            <div class="alert alert-danger">@errorMessage</div>
+                        }
+
+                        <button type="submit" class="btn btn-primary w-100" disabled="@isLoading">
+                            @if (isLoading)
+                            {
+                                <span class="spinner-border spinner-border-sm me-2"></span>
+                            }
+                            @(isLoginMode ? "Войти" : "Зарегистрироваться")
+                        </button>
+                    </EditForm>
+
+                    <div class="text-center mt-3">
+                        <button class="btn btn-link" @onclick="ToggleMode">
+                            @(isLoginMode ? "Нет аккаунта? Зарегистрироваться" : "Уже есть аккаунт? Войти")
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private AuthRequest authRequest = new();
+    private bool isLoginMode = true;
+    private bool isLoading = false;
+    private string errorMessage = string.Empty;
+
+    private void ToggleMode()
+    {
+        isLoginMode = !isLoginMode;
+        errorMessage = string.Empty;
+        authRequest = new AuthRequest();
+    }
+
+    private async Task HandleSubmit()
+    {
+        if (isLoading) return;
+
+        isLoading = true;
+        errorMessage = string.Empty;
+
+        try
+        {
+            var httpClient = HttpClientFactory.CreateClient("API");
+            var endpoint = isLoginMode ? "/api/auth/login" : "/api/auth/register";
+
+            var response = await httpClient.PostAsJsonAsync(endpoint, authRequest);
+
+            if (response.IsSuccessStatusCode)
+            {
+                Navigation.NavigateTo("/todo");
+            }
+            else
+            {
+                var errorContent = await response.Content.ReadAsStringAsync();
+                errorMessage = isLoginMode ? "Неверный email или пароль" : "Ошибка регистрации";
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = "Ошибка подключения к серверу";
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+}
