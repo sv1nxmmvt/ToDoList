@@ -42,7 +42,7 @@ using (var scope = app.Services.CreateScope())
 
 async Task CreateDatabaseIfNotExists()
 {
-    var masterConnectionString = "Host=localhost;Database=postgres;Username=postgres;Password=zasada1324";
+    var masterConnectionString = "Host=localhost;Database=postgres;Username=postgres;Password=";
     var dbName = "tododb";
 
     using var connection = new Npgsql.NpgsqlConnection(masterConnectionString);
