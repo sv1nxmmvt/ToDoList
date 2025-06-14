@@ -63,7 +63,6 @@
     }
 </div>
 
-<!-- Модальное окно для создания/редактирования задачи -->
 @if (showModal)
 {
     <div class="modal fade show" style="display: block;" tabindex="-1">
@@ -208,7 +207,6 @@
 
         try
         {
-            // Объединяем дату и время
             if (deadlineDate.HasValue)
             {
                 var time = TimeOnly.MinValue;
@@ -272,7 +270,7 @@
         }
         catch (Exception)
         {
-            // Игнорируем ошибки удаления
+            
         }
     }
 
@@ -285,7 +283,7 @@
         }
         catch (Exception)
         {
-            // Игнорируем ошибки выхода
+            
         }
         finally
         {

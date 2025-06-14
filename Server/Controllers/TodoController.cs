@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using TodoApp.Data;
 using TodoApp.Models;
 using System.Security.Claims;
+using Server.Models;
 
 namespace TodoApp.Controllers
 {
@@ -97,19 +98,5 @@ namespace TodoApp.Controllers
 
             return NoContent();
         }
-    }
-
-    public class CreateTodoModel
-    {
-        public string Title { get; set; } = string.Empty;
-        public string? Description { get; set; }
-        public DateTime? Deadline { get; set; }
-    }
-
-    public class UpdateTodoModel
-    {
-        public string Title { get; set; } = string.Empty;
-        public string? Description { get; set; }
-        public DateTime? Deadline { get; set; }
     }
 }
